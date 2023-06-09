@@ -8,18 +8,15 @@ import hashlib
 
 from  qblockchain import QBlockchain
 
-def test_hello():
-    assert 1 + 1 == 2
     
 def test_valid_chain():
     bc = QBlockchain()
     bc.mine_block("Valid block")
     assert bc.is_chain_valid() == True
     
-def test_circuit():
-    assert 2 + 1 == 3
+
     
-def test_4_bit():
+def test_circuit():
     bc = QBlockchain()
     bc.mine_block("Valid block")
     text = "0000000"
@@ -38,4 +35,19 @@ def test_4_bit():
     #input hashIn string
     fourbit_array = bc.break_up_4bit_values(hashIn_bin)
     assert len(fourbit_array) == 64
+    
+    q_par = [int(fourbit_array[i],2) for i in range(len(fourbit_array)-1)] #throwing away the last string element
+    print(q_par)
+    
+    assert type(q_par) == list
+    circuit = bc.quantum_circuit(q_par=q_par)
+    
+    assert circuit.num_qubits == 3
+    
+#def test_circuit():
+    #pass
+    #input hashIn string
+    #fourbit_array = break_up_4bit_values(hashIn)
+    #q_par = [int(fourbit_array[i],2) for i in range(len(fourbit_array)-1)] #throwing away the last string element
+    #circuit = quantum_circuit(q_par, n_qreg)
 

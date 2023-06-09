@@ -3,7 +3,7 @@ import hashlib as _hashlib
 import json as _json
 import random
 import sys
-import numpy as pi
+import numpy as np
 
 if sys.version_info < (3, 6):
 	import sha3
@@ -115,7 +115,7 @@ class QBlockchain:
         return True
     
     #setting the quantum circuit:
-    def quantum_circuit(self,q_par, n_qreg):
+    def quantum_circuit(self,q_par, n_qreg=3):
             qreg_q = QuantumRegister(n_qreg, 'q')
             creg_c = ClassicalRegister(n_qreg, 'c')
             circuit = QuantumCircuit(qreg_q, creg_c)
@@ -126,27 +126,27 @@ class QBlockchain:
             #n-qubit circuit  
             k = 0 #counter for the parameter values
             for i in range(n_qreg):   
-                circuit.rx(q_par[k+i] * pi/8, qreg_q[i])
+                circuit.rx(q_par[k+i] * np.pi/8, qreg_q[i])
             k+=n_qreg
             
             for i in range(n_qreg):    
-                circuit.rz(q_par[k+i] * pi/8, qreg_q[i])
+                circuit.rz(q_par[k+i] * np.pi/8, qreg_q[i])
             k+=n_qreg
             
             for i in range(n_qreg):
                 for j in range(n_qreg):
                     if j != i:
-                        circuit.crx(q_par[k+j]*pi/8, qreg_q[n_qreg-1-i], qreg_q[n_qreg-1-j])
+                        circuit.crx(q_par[k+j]*np.pi/8, qreg_q[n_qreg-1-i], qreg_q[n_qreg-1-j])
                     else:
                         k-=1
                 k+=n_qreg-1
             
             for i in range(n_qreg):   
-                circuit.rx(q_par[k+i]*pi/8, qreg_q[i])
+                circuit.rx(q_par[k+i]*np.pi/8, qreg_q[i])
             k+=n_qreg
             
             for i in range(n_qreg):    
-                circuit.rz(q_par[k+i]*pi/8, qreg_q[i])
+                circuit.rz(q_par[k+i]*np.pi/8, qreg_q[i])
 
             #measurements of all qubits
             for i in range(len(qreg_q)):
