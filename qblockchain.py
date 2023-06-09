@@ -3,6 +3,7 @@ import hashlib as _hashlib
 import json as _json
 import random
 import sys
+import numpy as pi
 
 if sys.version_info < (3, 6):
 	import sha3
@@ -125,11 +126,11 @@ class QBlockchain:
             #n-qubit circuit  
             k = 0 #counter for the parameter values
             for i in range(n_qreg):   
-                circuit.rx(q_par[k+i]*pi/8, qreg_q[i])
+                circuit.rx(q_par[k+i] * pi/8, qreg_q[i])
             k+=n_qreg
             
             for i in range(n_qreg):    
-                circuit.rz(q_par[k+i]*pi/8, qreg_q[i])
+                circuit.rz(q_par[k+i] * pi/8, qreg_q[i])
             k+=n_qreg
             
             for i in range(n_qreg):
@@ -153,4 +154,30 @@ class QBlockchain:
             
             return circuit
         
-        
+    # converting hashIn_bin to a bit string to pass thru a quantum processor
+    def break_up_4bit_values(self,hashIn_bin):
+
+        array_4_bit_values = []
+        i = 0
+
+        while i < 64 : 
+            four_bits = hashIn_bin[2+4*i:2+4*i+4]
+            array_4_bit_values.append(four_bits)
+            i = i + 1
+            
+        print("hashIn binary split into 4bit bins:", array_4_bit_values)
+        return array_4_bit_values
+    
+    def xor(self,a, b, n): #a,b - strings, n - length of the XOR output
+        ans = ""
+
+        # Loop to iterate over the
+        # Binary Strings
+        for i in range(n):
+
+            # If the Character matches
+            if (a[i] == b[i]):
+                ans += "0"
+            else:
+                ans += "1"
+        return ans
