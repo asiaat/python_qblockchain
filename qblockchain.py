@@ -17,14 +17,26 @@ from qiskit.tools.visualization import plot_histogram
 from qiskit.transpiler import PassManager
 from qiskit.tools.monitor import job_monitor
 from qiskit.providers.aer import AerSimulator
+from qiskit_ibm_provider import IBMProvider
 
 class QBlockchain:
-    def __init__(self):
+    def __init__(self, simulator_name):
         self.chain = list()
         initial_block = self._create_block(
             data="genesis block", proof=1, previous_hash="0", index=1
         )
         self.chain.append(initial_block)
+        self.provider = IBMProvider()
+        
+        self.simu_name = simulator_name
+        self.simulator_backend   = BasicAer.get_backend(self.simu_name)
+        
+    def get_simulator_backend(self):
+        #backend = None
+        #if self.simulator_backend == None:
+        #    backend =  BasicAer.get_backend(self.simu_name)
+        
+        return self.simulator_backend 
 
     def mine_block(self, data: str) -> dict:
         previous_block = self.get_previous_block()
@@ -181,3 +193,38 @@ class QBlockchain:
             else:
                 ans += "1"
         return ans
+    
+    def sim_quantum_operation(self, hashIn, nonce):
+        
+        #input hashIn string
+        fourbit_array = self.break_up_4bit_values(hashIn)
+        q_par = [int(fourbit_array[i],2) for i in range(len(fourbit_array)-1)] #throwing away the last string element
+        circuit = self.quantum_circuit(q_par)
+        #print("n_qreg: "+str(n_qreg))
+
+        backend = self.simulator_backend
+
+        job = execute(circuit, backend, shots=20000)
+
+        # Monitor job progress and wait until complete:
+        job_monitor(job)
+
+        # Get the job results (this method also waits for the Job to complete):
+        results = job.result()
+        print(results)        
+        
+        comp_time = results.time_taken
+        counts = results.get_counts(circuit)
+        status = results.status
+        
+        #picking up the maximally probable state
+        max_state = max(counts, key=counts.get)
+        print ('max_state:', max_state)
+        max_state256 = max_state
+
+        for i in range(256 - len(max_state)):
+            max_state256+='0'       
+
+        return [status, max_state256, comp_time] #4bit vector
+    
+    
