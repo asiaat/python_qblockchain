@@ -63,9 +63,10 @@ def test_quantum_simulation():
     print ('hashIn-binary:', str(hashIn_bin), 'length:', len(hashIn_bin))
     
     assert len(hashIn_bin) > 0
-    [status, max_state256, comp_time] = bc.sim_quantum_operation(hashIn_bin,1)
+    [status, success, max_state256, comp_time] = bc.sim_quantum_operation(hashIn_bin,1)
     
     assert status == "COMPLETED"
+    assert success == True
     
     
     

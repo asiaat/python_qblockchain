@@ -216,6 +216,7 @@ class QBlockchain:
         comp_time = results.time_taken
         counts = results.get_counts(circuit)
         status = results.status
+        success = results.success
         
         #picking up the maximally probable state
         max_state = max(counts, key=counts.get)
@@ -225,6 +226,6 @@ class QBlockchain:
         for i in range(256 - len(max_state)):
             max_state256+='0'       
 
-        return [status, max_state256, comp_time] #4bit vector
+        return [status, success, max_state256, comp_time] #4bit vector
     
     
