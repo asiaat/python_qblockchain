@@ -4,6 +4,7 @@ import json as _json
 import random
 import sys
 import numpy as np
+import time
 
 if sys.version_info < (3, 6):
 	import sha3
@@ -30,6 +31,7 @@ class QBlockchain:
         
         self.simu_name = simulator_name
         self.simulator_backend   = BasicAer.get_backend(self.simu_name)
+        self.MAX_NONCE = 2**32
         
     def get_simulator_backend(self):
         #backend = None
@@ -213,10 +215,10 @@ class QBlockchain:
         results = job.result()
         print(results)        
         
-        comp_time = results.time_taken
-        counts = results.get_counts(circuit)
-        status = results.status
-        success = results.success
+        comp_time   = results.time_taken
+        counts      = results.get_counts(circuit)
+        status      = results.status
+        success     = results.success
         
         #picking up the maximally probable state
         max_state = max(counts, key=counts.get)
@@ -229,3 +231,86 @@ class QBlockchain:
         return [status, success, max_state256, comp_time] #4bit vector
     
     
+    def qPoW(self,text, QC_switch, nonce):
+    
+        hashIn = _hashlib.sha3_256(text.encode("ascii")).hexdigest() # hashing the 'text' input
+        #string-type output
+        
+        print ('hashIn-hex:', hashIn, 'length:', len(hashIn))
+
+        # convert hashIn(hex) to hashIn_bin(binary)
+        scale = 16 #hex base
+        hashIn_bin = bin(int(hashIn, scale))[2:].zfill(len(hashIn)*4)
+        print ('hashIn-binary:', str(hashIn_bin), 'length:', len(hashIn_bin))
+        
+        #switch to enable quantum simulator or quantum computer
+        if QC_switch == 0:
+            [status, success,qstate_bin, comp_time] = self.sim_quantum_operation(hashIn_bin, nonce)
+            #print("Circuit: number of qubits: "+quantum_circuit.num_qubits())
+        if QC_switch == 1: 
+            pass
+
+        print('qblock-output:', str(qstate_bin), 'length:', len(qstate_bin))
+
+        xor_bin = self.xor(str(hashIn_bin), str(qstate_bin), 256)
+        hashOut = _hashlib.sha3_256(xor_bin.encode("ascii")).hexdigest()
+
+        print('XOR:', str(xor_bin), 'length:', len(xor_bin))        
+        print('hashOut-hex:', str(hashOut), 'length:', len(hashOut), '\n\n')
+
+        return [hashOut, comp_time]
+    
+    def verify(self,text, nonce, prefix_zeros):
+        prefix_str = '0'*prefix_zeros
+
+        print('verify::nonce:', nonce)
+        #text = "Quantamoto"
+        #text = str(block_number) + transactions + previous_hash + str(nonce)
+        print('verify::text:', text)
+        [new_hash, ver_time] = self.qPoW(text, QC_switch=0, nonce=1)
+        
+        print("verify::new_hash: "+new_hash)
+
+        if new_hash.startswith(prefix_str):
+            print(f"verify:: Verified: nonce {nonce}\n") 
+            
+            return [True, new_hash, ver_time]
+        else:
+            print(f"verify:: False:{nonce}\n")
+            
+            return [False, None, ver_time]
+        
+    def mine_using_simu(self, prefix_zeros):
+        
+        prefix_str = '0'*prefix_zeros #sets the difficulty, in hex format, bin: multiply by 4
+        
+        start = time.time()
+        comp_time_block = 0
+        routine_n_times = 0
+        
+        for i in range(self.MAX_NONCE):
+#             random.seed(i)
+            nonce = random.randint(0, self.MAX_NONCE)
+            print('created  nonce:', nonce)
+            #text = str(block_number) + transactions + previous_hash + str(nonce) #hash input
+            text = "nakamo"+str(nonce)
+            print ('text:', text, '\n'  )
+            [new_hash, comp_time] = self.qPoW(text=text,QC_switch=0,nonce=nonce)
+
+            
+            comp_time_block+=comp_time
+            routine_n_times = i
+            
+            if new_hash.startswith(prefix_str):
+                print('PROOF founded! : hash:', new_hash)
+                break
+            
+        print("===========================================================================")
+        
+        total_time = str((time.time() - start))
+        print(f"mining ended. mining time: {total_time} seconds")
+        print('final hash:', new_hash)
+        print('suitable nonce:', nonce)
+        print(f"routine {routine_n_times} times")
+        
+        return [new_hash, nonce, comp_time]

@@ -68,6 +68,39 @@ def test_quantum_simulation():
     assert status == "COMPLETED"
     assert success == True
     
+def test_qpow():
+    text = "1234"
+    res = bc.qPoW(text=text,QC_switch=0,nonce=1)
+    assert res != None
+    
+def test_run_simulation():
+    
+    hashIn = hashlib.sha3_256("shatoshi nakamoto".encode("ascii")).hexdigest() # hashing the 'text' input
+
+    print ('hashIn-hex:', hashIn, 'length:', len(hashIn))
+
+    # convert hashIn(hex) to hashIn_bin(binary)
+    scale = 16 #hex base
+    hashIn_bin = bin(int(hashIn, scale))[2:].zfill(len(hashIn)*4)
+    print ('hashIn-binary:', str(hashIn_bin), 'length:', len(hashIn_bin))
+    
+    assert len(hashIn_bin) > 0
+    [status, success, max_state256, comp_time] = bc.sim_quantum_operation(hashIn_bin,1)
+    
+    assert status == "COMPLETED"
+    assert success == True
+    
+def test_verify():
+    text = "1234"
+    [check, hash, ver_time] = bc.verify(text=text,nonce=2,prefix_zeros=3)
+    print("hash: "+str(hash))
+    assert check == False
+    
+def test_mine_using_simu():
+    [new_hash, nonce, comp_time] = bc.mine_using_simu(2)
+    assert 1 == 1
+    
+    
     
     
 
