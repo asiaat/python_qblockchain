@@ -314,3 +314,26 @@ class QBlockchain:
         print(f"routine {routine_n_times} times")
         
         return [new_hash, nonce, comp_time]
+    
+
+    def string_to_bitlist(self,inpt_str):
+
+        hashIn = _hashlib.sha3_256(inpt_str.encode("ascii")).hexdigest() # hashing the 'text' input
+        #string-type output
+            
+        print ('hashIn-hex:', hashIn, 'length:', len(hashIn))
+        
+
+        # convert hashIn(hex) to hashIn_bin(binary)
+        scale = 16 #hex base
+        hashIn_bin = bin(int(hashIn, scale))[2:].zfill(len(hashIn)*4)
+        print ('hashIn-binary:', str(hashIn_bin), 'length:', len(hashIn_bin))
+    
+        #input hashIn string
+        fourbit_array = self.break_up_4bit_values(hashIn_bin)
+        assert len(fourbit_array) == 64
+        
+        q_par = [int(fourbit_array[i],2) for i in range(len(fourbit_array)-1)] #throwing away the last string element
+        print(q_par)
+        
+        return q_par

@@ -24,7 +24,7 @@ def test_backend():
     
 
     
-def test_circuit():
+def circuit():
     #bc = QBlockchain("ibmq_qasm_simulator")
     bc.mine_block("Valid block")
     text = "0000000"
@@ -52,7 +52,7 @@ def test_circuit():
     
     assert circuit.num_qubits == 3
     
-def test_quantum_simulation():
+def quantum_simulation():
     hashIn = hashlib.sha3_256("00000".encode("ascii")).hexdigest() # hashing the 'text' input
 
     print ('hashIn-hex:', hashIn, 'length:', len(hashIn))
@@ -68,7 +68,7 @@ def test_quantum_simulation():
     assert status == "COMPLETED"
     assert success == True
     
-def test_qpow():
+def qpow():
     text = "1234"
     res = bc.qPoW(text=text,QC_switch=0,nonce=1)
     assert res != None
@@ -90,15 +90,21 @@ def test_run_simulation():
     assert status == "COMPLETED"
     assert success == True
     
-def test_verify():
+def verify():
     text = "1234"
     [check, hash, ver_time] = bc.verify(text=text,nonce=2,prefix_zeros=3)
     print("hash: "+str(hash))
     assert check == False
     
-def test_mine_using_simu():
+def mine_using_simu():
     [new_hash, nonce, comp_time] = bc.mine_using_simu(2)
     assert 1 == 1
+    
+def test_text_to_bitlist():
+    bitit_list = bc.string_to_bitlist("0000")
+    assert bitit_list == [9, 10, 11, 13, 12, 2, 13, 14, 11, 12, 15, 13, 0, 8, 13, 4, 11, 5, 14, 0, 15, 10, 2, 12, 1, 13, 4, 5, 7, 9, 0, 12, 15, 0, 15, 5, 1, 5, 9, 10, 7, 5, 3, 11, 15, 11, 9, 9, 12, 1, 4, 5, 9, 12, 9, 12, 6, 4, 14, 12, 10, 4, 6]
+
+    bc.quantum_circuit(bitit_list,3)
     
     
     
