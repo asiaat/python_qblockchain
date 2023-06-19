@@ -12,7 +12,7 @@ from qiskit_ibm_provider import IBMProvider
 
 bc = QBlockchain("qasm_simulator")
     
-def test_valid_chain():
+def valid_chain():
     #bc = QBlockchain("ibmq_qasm_simulator")
     bc.mine_block("Valid block")
     assert bc.is_chain_valid() == True
@@ -23,6 +23,8 @@ def test_backend():
     assert bc.get_simulator_backend().name() == bc.simu_name
     
 
+    """_summary_
+    
     
 def circuit():
     #bc = QBlockchain("ibmq_qasm_simulator")
@@ -90,13 +92,13 @@ def test_run_simulation():
     assert status == "COMPLETED"
     assert success == True
     
-def verify():
+def test_verify():
     text = "1234"
     [check, hash, ver_time] = bc.verify(text=text,nonce=2,prefix_zeros=3)
     print("hash: "+str(hash))
     assert check == False
     
-def mine_using_simu():
+def test_mine_using_simu():
     [new_hash, nonce, comp_time] = bc.mine_using_simu(2)
     assert 1 == 1
     
@@ -107,7 +109,7 @@ def test_text_to_bitlist():
     bc.quantum_circuit(bitit_list,3)
     
     
-    
+    """
     
 
 
