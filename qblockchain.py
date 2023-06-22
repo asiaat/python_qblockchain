@@ -213,10 +213,12 @@ class QBlockchain:
 
         # Get the job results (this method also waits for the Job to complete):
         results = job.result()
-        print(results)        
+        #print("RESULTS: \n"+str(results))        
         
         comp_time   = results.time_taken
         counts      = results.get_counts(circuit)
+        print("COUNTS: \n"+str(counts))  
+        
         status      = results.status
         success     = results.success
         
@@ -336,4 +338,4 @@ class QBlockchain:
         q_par = [int(fourbit_array[i],2) for i in range(len(fourbit_array)-1)] #throwing away the last string element
         print(q_par)
         
-        return q_par
+        return [q_par,hashIn,hashIn_bin]

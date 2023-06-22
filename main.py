@@ -33,7 +33,7 @@ def main():
 def mine():
     bc = QBlockchain("qasm_simulator")
     bc.mine_block("any str")
-    bc.mine_using_simu(3)
+    bc.mine_using_simu(2)
     
 def starts_with(new_hash, starts):
     res = new_hash.startswith(starts)
